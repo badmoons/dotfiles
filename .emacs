@@ -1,16 +1,32 @@
+;;(use-package lsp-mode
+;;  :init
+;;  ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
+;;  (setq lsp-keymap-prefix "C-c l")
+;;  (require 'lsp-ido)
+;;  :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
+;;	 (prog-mode . lsp)
+;;         ;;(pythom-ts-mode . lsp)
+;;	 ;;(c-ts-mode . lsp)
+;;         ;; if you want which-key integration
+;;         (lsp-mode . lsp-enable-which-key-integration))
+;;  :commands lsp)
+;;
+;;;; optionally
+;;(use-package lsp-ui :commands lsp-ui-mode)
+;;;;
+(use-package which-key
+  :config
+    (which-key-mode))
+
 (use-package beacon
-  :init
-  (beacon-mode 1))
+  :init (beacon-mode 1))
 
 (use-package move-text
-  :init
-  (package-initialize)
   :config
   (move-text-default-bindings))
 (use-package dumb-jump
   :init
   (setq xref-show-definitions-function #'xref-show-definitions-completing-read)
-
   :config
   (add-hook 'xref-backend-functions #'dumb-jump-xref-activate))
 
@@ -65,6 +81,7 @@
 
 
 ;; Hooks
+(add-hook `prog-mode-hook `prettify-symbols-mode)
 (add-hook `prog-mode-hook `eglot-ensure) ;; lsp for programming languages
 (add-hook `prog-mode-hook `rainbow-delimiters-mode) ;; Better paren highlighting for programming languages.
 (add-hook `after-init-hook `global-company-mode) ;; Company
@@ -84,7 +101,7 @@
   "Set up Emacs' `exec-path' and PATH environment variable to match
 that used by the user's shell."
 
-  (interactive)
+  (interactive) 
   (let ((path-from-shell (replace-regexp-in-string
 			  "[ \t\n]*$" "" (shell-command-to-string
 					  "$SHELL --login -c 'echo $PATH'"
@@ -96,37 +113,37 @@ that used by the user's shell."
 
 
 ;; Ligatures. Fng finally. :/ :: -> <->
-(when (window-system)
-  (set-frame-font "Fira Code"))
-(let ((alist '((33 . ".\\(?:\\(?:==\\|!!\\)\\|[!=]\\)")
-               (35 . ".\\(?:###\\|##\\|_(\\|[#(?[_{]\\)")
-               (36 . ".\\(?:>\\)")
-               (37 . ".\\(?:\\(?:%%\\)\\|%\\)")
-               (38 . ".\\(?:\\(?:&&\\)\\|&\\)")
-               (42 . ".\\(?:\\(?:\\*\\*/\\)\\|\\(?:\\*[*/]\\)\\|[*/>]\\)")
-               (43 . ".\\(?:\\(?:\\+\\+\\)\\|[+>]\\)")
-               (45 . ".\\(?:\\(?:-[>-]\\|<<\\|>>\\)\\|[<>}~-]\\)")
-               (46 . ".\\(?:\\(?:\\.[.<]\\)\\|[.=-]\\)")
-               (47 . ".\\(?:\\(?:\\*\\*\\|//\\|==\\)\\|[*/=>]\\)")
-               (48 . ".\\(?:x[a-zA-Z]\\)")
-               (58 . ".\\(?:::\\|[:=]\\)")
-               (59 . ".\\(?:;;\\|;\\)")
-               (60 . ".\\(?:\\(?:!--\\)\\|\\(?:~~\\|->\\|\\$>\\|\\*>\\|\\+>\\|--\\|<[<=-]\\|=[<=>]\\||>\\)\\|[*$+~/<=>|-]\\)")
-               (61 . ".\\(?:\\(?:/=\\|:=\\|<<\\|=[=>]\\|>>\\)\\|[<=>~]\\)")
-               (62 . ".\\(?:\\(?:=>\\|>[=>-]\\)\\|[=>-]\\)")
-               (63 . ".\\(?:\\(\\?\\?\\)\\|[:=?]\\)")
-               (91 . ".\\(?:]\\)")
-               (92 . ".\\(?:\\(?:\\\\\\\\\\)\\|\\\\\\)")
-               (94 . ".\\(?:=\\)")
-               (119 . ".\\(?:ww\\)")
-               (123 . ".\\(?:-\\)")
-               (124 . ".\\(?:\\(?:|[=|]\\)\\|[=>|]\\)")
-               (126 . ".\\(?:~>\\|~~\\|[>=@~-]\\)")
-               )
-             ))
-  (dolist (char-regexp alist)
-    (set-char-table-range composition-function-table (car char-regexp)
-                          `([,(cdr char-regexp) 0 font-shape-gstring]))))
+;;(when (window-system)
+;;  (set-frame-font "Fira Code"))
+;;(let ((alist '((33 . ".\\(?:\\(?:==\\|!!\\)\\|[!=]\\)")
+;;               (35 . ".\\(?:###\\|##\\|_(\\|[#(?[_{]\\)")
+;;               (36 . ".\\(?:>\\)")
+;;               (37 . ".\\(?:\\(?:%%\\)\\|%\\)")
+;;               (38 . ".\\(?:\\(?:&&\\)\\|&\\)")
+;;               (42 . ".\\(?:\\(?:\\*\\*/\\)\\|\\(?:\\*[*/]\\)\\|[*/>]\\)")
+;;               (43 . ".\\(?:\\(?:\\+\\+\\)\\|[+>]\\)")
+;;               (45 . ".\\(?:\\(?:-[>-]\\|<<\\|>>\\)\\|[<>}~-]\\)")
+;;               (46 . ".\\(?:\\(?:\\.[.<]\\)\\|[.=-]\\)")
+;;               (47 . ".\\(?:\\(?:\\*\\*\\|//\\|==\\)\\|[*/=>]\\)")
+;;               (48 . ".\\(?:x[a-zA-Z]\\)")
+;;               (58 . ".\\(?:::\\|[:=]\\)")
+;;               (59 . ".\\(?:;;\\|;\\)")
+;;               (60 . ".\\(?:\\(?:!--\\)\\|\\(?:~~\\|->\\|\\$>\\|\\*>\\|\\+>\\|--\\|<[<=-]\\|=[<=>]\\||>\\)\\|[*$+~/<=>|-]\\)")
+;;               (61 . ".\\(?:\\(?:/=\\|:=\\|<<\\|=[=>]\\|>>\\)\\|[<=>~]\\)")
+;;               (62 . ".\\(?:\\(?:=>\\|>[=>-]\\)\\|[=>-]\\)")
+;;               (63 . ".\\(?:\\(\\?\\?\\)\\|[:=?]\\)")
+;;               (91 . ".\\(?:]\\)")
+;;               (92 . ".\\(?:\\(?:\\\\\\\\\\)\\|\\\\\\)")
+;;               (94 . ".\\(?:=\\)")
+;;               (119 . ".\\(?:ww\\)")
+;;               (123 . ".\\(?:-\\)")
+;;               (124 . ".\\(?:\\(?:|[=|]\\)\\|[=>|]\\)")
+;;               (126 . ".\\(?:~>\\|~~\\|[>=@~-]\\)")
+;;               )
+;;             ))
+;;  (dolist (char-regexp alist)
+;;    (set-char-table-range composition-function-table (car char-regexp)
+;;                          `([,(cdr char-regexp) 0 font-shape-gstring]))))
 
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
@@ -151,7 +168,7 @@ that used by the user's shell."
  '(global-display-line-numbers-mode t)
  '(indicate-empty-lines t)
  '(package-selected-packages
-   '(beacon move-text dumb-jump doom-themes yaml-mode golden-ratio smex rainbow-delimiters gruvbox-theme solarized-theme geiser-racket geiser racket-mode yasnippet eglot which-key rust-mode magit company multiple-cursors markdown-mode dracula-theme))
+   '(lsp-pascal lsp-ui lsp-mode doom-modeline beacon move-text dumb-jump doom-themes yaml-mode golden-ratio smex rainbow-delimiters gruvbox-theme solarized-theme geiser-racket geiser racket-mode yasnippet eglot which-key rust-mode magit company multiple-cursors markdown-mode dracula-theme))
  '(scroll-bar-mode nil)
  '(tool-bar-mode nil)
  '(tool-bar-position 'left)
