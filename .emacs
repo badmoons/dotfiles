@@ -13,9 +13,17 @@
 (require 'rainbow-delimiters)
 (require 'ido) (ido-mode t)
 (require 'which-key) (which-key-mode 1)
-(require 'yasnippet) (yas-global-mode 1)
 (require 'smex) (smex-initialize)
 (require 'golden-ratio) (golden-ratio-mode t)
+
+;; yasnippet config. It works somehow, even though I don't understand `use-package`
+(use-package yasnippet
+  :init
+  (require 'yasnippet)
+  (yas-global-mode 1)
+  :config
+  (add-to-list 'load-path
+	       "~/.emacs.d/plugings/yasnippet"))
 
 ;; change mode to another mode (kind of). It is needed for tree-sitter. It changes automatically launched mode from one to another, tree-sitter for example
 (add-to-list 'major-mode-remap-alist
