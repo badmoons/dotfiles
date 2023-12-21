@@ -1,3 +1,7 @@
+(use-package beacon
+  :init
+  (beacon-mode 1))
+
 (use-package move-text
   :init
   (package-initialize)
@@ -147,7 +151,7 @@ that used by the user's shell."
  '(global-display-line-numbers-mode t)
  '(indicate-empty-lines t)
  '(package-selected-packages
-   '(move-text dumb-jump doom-themes yaml-mode golden-ratio smex rainbow-delimiters gruvbox-theme solarized-theme geiser-racket geiser racket-mode yasnippet eglot which-key rust-mode magit company multiple-cursors markdown-mode dracula-theme))
+   '(beacon move-text dumb-jump doom-themes yaml-mode golden-ratio smex rainbow-delimiters gruvbox-theme solarized-theme geiser-racket geiser racket-mode yasnippet eglot which-key rust-mode magit company multiple-cursors markdown-mode dracula-theme))
  '(scroll-bar-mode nil)
  '(tool-bar-mode nil)
  '(tool-bar-position 'left)
