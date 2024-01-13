@@ -1,19 +1,4 @@
-;;(use-package lsp-mode
-;;  :init
-;;  ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
-;;  (setq lsp-keymap-prefix "C-c l")
-;;  (require 'lsp-ido)
-;;  :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
-;;	 (prog-mode . lsp)
-;;         ;;(pythom-ts-mode . lsp)
-;;	 ;;(c-ts-mode . lsp)
-;;         ;; if you want which-key integration
-;;         (lsp-mode . lsp-enable-which-key-integration))
-;;  :commands lsp)
-;;
-;;;; optionally
-;;(use-package lsp-ui :commands lsp-ui-mode)
-;;;;
+(pixel-scroll-precision-mode)
 (use-package which-key
   :config
     (which-key-mode))
@@ -50,6 +35,11 @@
 	     '(python-mode . python-ts-mode)
 	     '(c-mode . c-ts-mode))
 	     
+;; 80 character column
+(setq display-fill-column-indicator-column 80)
+
+(setq markdown-fontify-code-blocks-natively t)
+
 ;; remove starting screen
 (setq inhibit-startup-screen t)
 
@@ -79,8 +69,8 @@
 (global-set-key [f5] 'revert-buffer-no-confirm)
 (add-hook 'prog-mode-hook  (lambda () (local-set-key [f9] 'compile)))
 
-
 ;; Hooks
+(add-hook `prog-mode-hook `display-fill-column-indicator-mode)
 (add-hook `prog-mode-hook `prettify-symbols-mode)
 (add-hook `prog-mode-hook `eglot-ensure) ;; lsp for programming languages
 (add-hook `prog-mode-hook `rainbow-delimiters-mode) ;; Better paren highlighting for programming languages.
@@ -164,7 +154,6 @@ that used by the user's shell."
  '(dired-use-ls-dired t)
  '(display-line-numbers-type 'visual)
  '(display-time-mode t)
- '(font-use-system-font t)
  '(global-display-line-numbers-mode t)
  '(indicate-empty-lines t)
  '(package-selected-packages
@@ -178,4 +167,5 @@ that used by the user's shell."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
+ '(default ((t (:family "Fira Code" :foundry "CTDB" :slant normal :weight regular :height 98 :width normal)))))
+(put 'downcase-region 'disabled nil)
