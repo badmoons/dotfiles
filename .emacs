@@ -4,12 +4,6 @@
 (cua-mode t)
 (scroll-bar-mode 0)
 (menu-bar-mode 0)
-(use-package which-key
-  :config
-    (which-key-mode))
-
-(use-package beacon
-  :init (beacon-mode 1))
 
 (use-package move-text
   :config
@@ -20,18 +14,36 @@
   :config
   (add-hook 'xref-backend-functions #'dumb-jump-xref-activate))
 
+;; pretty
+;; (use-package beacon
+;;   :init (beacon-mode 1))
 (require 'rainbow-delimiters)
-(require 'ido) (ido-mode t)
 (require 'which-key) (which-key-mode 1)
-(require 'smex) (smex-initialize)
 (require 'golden-ratio) (golden-ratio-mode t)
 
 ;; set theme
 (require 'doom-themes)
 (if (display-graphic-p)
     (load-theme 'doom-dracula 'yes)
- )
+  )
 
+;; easier ui
+;; (require 'ido) (ido-mode t) ;;
+;; (require 'smex) (smex-initialize)
+   ;; smex keybindings
+;; (global-set-key (kbd "M-x") 'smex)
+;; (global-set-key (kbd "M-x") 'smex-major-mode-commands)
+;; (global-set-key (kbd "C-c C-c M-x") 'execute-extended-command)
+
+(use-package helm-mode
+  :config
+  (global-set-key (kbd "M-x") 'helm-M-x)
+  (global-set-key (kbd "C-c C-c M-x") 'execute-extended-command)
+  (helm-mode 1))
+
+(use-package which-key
+  :config
+    (which-key-mode))
 
 ;; yasnippet config. It works somehow, even though I don't understand `use-package`
 (use-package yasnippet
@@ -74,9 +86,6 @@
     (revert-buffer :ignore-auto :noconfirm))
 
 ;; Keybindings
-(global-set-key (kbd "M-x") 'smex)
-(global-set-key (kbd "M-x") 'smex-major-mode-commands)
-(global-set-key (kbd "C-c C-c M-x") 'execute-extended-command)
 (global-set-key [f5] 'revert-buffer-no-confirm)
 (add-hook 'prog-mode-hook   (lambda () (local-set-key [f9] 'compile)))
 (add-hook 'dired-mode-hook  (lambda () (local-set-key [f9] 'compile)))
@@ -157,7 +166,9 @@ that used by the user's shell."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
-   '("8c7e832be864674c220f9a9361c851917a93f921fedb7717b1b5ece47690c098" default)))
+   '("8d8207a39e18e2cc95ebddf62f841442d36fcba01a2a9451773d4ed30b632443" "37b6695bae243145fa2dfb41440c204cd22833c25cd1993b0f258905b9e65577" "be84a2e5c70f991051d4aaf0f049fa11c172e5d784727e0b525565bb1533ec78" "b54376ec363568656d54578d28b95382854f62b74c32077821fdfd604268616a" "f5f80dd6588e59cfc3ce2f11568ff8296717a938edd448a947f9823a4e282b66" "8c7e832be864674c220f9a9361c851917a93f921fedb7717b1b5ece47690c098" default))
+ '(package-selected-packages
+   '(helm yasnippet which-key smex rainbow-delimiters multiple-cursors move-text golden-ratio-scroll-screen golden-ratio dumb-jump doom-themes company beacon)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: html-tag
+# key: tag
+# --
+<$1>
+  $0
+</$1>
