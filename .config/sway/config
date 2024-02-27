@@ -22,10 +22,8 @@ set $screenshot grim -g "$(slurp)" - | wl-copy
 ### Output configuration
 #
 # Default wallpaper (more resolutions are available in /usr/share/backgrounds/sway/)
-#output * bg /usr/share/backgrounds/sway/Sway_Wallpaper_Blue_1920x1080.png fill
-# Not default wallapaper
-output * bg ~/Изображения/Ashley-Graves-Andrew-Graves-The-Coffin-of-Andy-and-Leyley-7967942.jpeg fill
-#
+output * bg /usr/share/backgrounds/sway/Sway_Wallpaper_Blue_1920x1080.png fill
+
 # Example configuration:
 #
 #   output HDMI-A-1 resolution 1920x1080 position 1920,0
@@ -54,12 +52,12 @@ input * {
 
 # Example configuration:
 #
-input "2:7:SynPS/2_Synaptics_TouchPad" {
-       dwt enabled
-       tap enabled
-       # natural_scroll enabled
-       middle_emulation enabled
-   }
+#input "2:7:SynPS/2_Synaptics_TouchPad" {
+#       dwt enabled
+#       tap enabled
+#       # natural_scroll enabled
+#       middle_emulation enabled
+#   }
 #
 # You can get the names of your inputs by running: swaymsg -t get_inputs
 # Read `man 5 sway-input` for more information abuot this section.

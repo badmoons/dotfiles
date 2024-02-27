@@ -2,4 +2,4 @@
 # name: inline html-tag
 # key: itag
 # --
-<$1>$0</$1>p
+<$1>$0</$1>

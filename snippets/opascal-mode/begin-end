@@ -1,7 +1,0 @@
-# -*- mode: snippet -*-
-# name: opascal-begin-end
-# key: be
-# --
-begin
- $0
-end;
