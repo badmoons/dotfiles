@@ -1,6 +1,50 @@
-(pixel-scroll-precision-mode)
-(global-display-line-numbers-mode)
-(setq display-line-numbers 'relative)
+;; elpaca
+(defvar elpaca-installer-version 0.7)
+(defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
+(defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
+(defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
+(defvar elpaca-order '(elpaca :repo "https://github.com/progfolio/elpaca.git"
+                              :ref nil :depth 1
+                              :files (:defaults "elpaca-test.el" (:exclude "extensions"))
+                              :build (:not elpaca--activate-package)))
+(let* ((repo  (expand-file-name "elpaca/" elpaca-repos-directory))
+       (build (expand-file-name "elpaca/" elpaca-builds-directory))
+       (order (cdr elpaca-order))
+       (default-directory repo))
+  (add-to-list 'load-path (if (file-exists-p build) build repo))
+  (unless (file-exists-p repo)
+    (make-directory repo t)
+    (when (< emacs-major-version 28) (require 'subr-x))
+    (condition-case-unless-debug err
+        (if-let ((buffer (pop-to-buffer-same-window "*elpaca-bootstrap*"))
+                 ((zerop (apply #'call-process `("git" nil ,buffer t "clone"
+                                                 ,@(when-let ((depth (plist-get order :depth)))
+                                                     (list (format "--depth=%d" depth) "--no-single-branch"))
+                                                 ,(plist-get order :repo) ,repo))))
+                 ((zerop (call-process "git" nil buffer t "checkout"
+                                       (or (plist-get order :ref) "--"))))
+                 (emacs (concat invocation-directory invocation-name))
+                 ((zerop (call-process emacs nil buffer nil "-Q" "-L" "." "--batch"
+                                       "--eval" "(byte-recompile-directory \".\" 0 'force)")))
+                 ((require 'elpaca))
+                 ((elpaca-generate-autoloads "elpaca" repo)))
+            (progn (message "%s" (buffer-string)) (kill-buffer buffer))
+          (error "%s" (with-current-buffer buffer (buffer-string))))
+      ((error) (warn "%s" err) (delete-directory repo 'recursive))))
+  (unless (require 'elpaca-autoloads nil t)
+    (require 'elpaca)
+    (elpaca-generate-autoloads "elpaca" repo)
+    (load "./elpaca-autoloads")))
+(add-hook 'after-init-hook #'elpaca-process-queues)
+(elpaca `(,@elpaca-order))
+
+;; Install use-package support
+(elpaca elpaca-use-package
+  ;; Enable use-package :ensure support for Elpaca.
+  (elpaca-use-package-mode))
+(elpaca-wait)
+ 
+;; end elpaca
 (tool-bar-mode 0)
 (cua-mode t)
 (scroll-bar-mode 0)
@@ -8,27 +52,75 @@
 (windmove-default-keybindings)
 (setq windmove-wrap-around 't)
 
+;; installed packages
+
+(use-package jinx :ensure t :demand t)
+(use-package scala-ts-mode :ensure t :demand t)
+(use-package markdown-mode :ensure t :demand t)
+(use-package transient :ensure t)
+(use-package magit :ensure t :demand t)
+(use-package rainbow-delimiters :ensure t :demand t)
+
+(use-package golden-ratio :ensure t :demand t)
+;; (use-package golden-ratio-scroll-screen :ensure t :demand t)
+(use-package company :ensure t :demand t)
+(use-package beacon :ensure t :demand t)
+
+(use-package multiple-cursors :ensure t :demand t
+  :init
+  ;; Multiple cursors
+  (require 'multiple-cursors)
+
+  ;; When you have an active region that spans multiple lines, the following will add a cursor to each line:
+  (global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
+  ;; When you want to add multiple cursors not based on continuous lines, but based on keywords in the buffer, use:
+  (global-set-key (kbd "C->") 'mc/mark-next-like-this)
+  (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
+  (global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this))
+
+(use-package doom-themes :ensure t :demand t
+  :init
+  ;; set theme
+  (if (display-graphic-p)
+      (load-theme 'doom-badger 'yes)))
+
 (use-package move-text
+  :ensure t :demand t
   :config
   (move-text-default-bindings))
 (use-package dumb-jump
+  :ensure t :demand t
   :init
   (setq xref-show-definitions-function #'xref-show-definitions-completing-read)
   :config
   (add-hook 'xref-backend-functions #'dumb-jump-xref-activate))
 
-;; pretty
-;; (use-package beacon
-;;   :init (beacon-mode 1))
-(require 'rainbow-delimiters)
-(require 'which-key) (which-key-mode 1)
-(require 'golden-ratio) (golden-ratio-mode t)
+(use-package helm
+  :ensure t :demand t
+  :config
+  (global-set-key (kbd "M-x") 'helm-M-x)
+  (global-set-key (kbd "C-c C-c M-x") 'execute-extended-command)
+  (helm-mode 1))
 
-;; set theme
-(require 'doom-themes)
-(if (display-graphic-p)
-    (load-theme 'doom-badger 'yes)
-  )
+(use-package which-key
+  :ensure t :demand t
+  :config
+    (which-key-mode))
+
+;; yasnippet config. It works somehow, even though I don't understand `use-package`
+(use-package yasnippet
+  :ensure t :demand t
+  :init
+  (require 'yasnippet)
+  (yas-global-mode 1)
+  :config
+  (add-to-list 'load-path
+	       "~/.emacs.d/plugins/yasnippet"))
+
+;;(require 'rainbow-delimiters)
+;;(require 'which-key) (which-key-mode 1)
+;;(require 'golden-ratio) (golden-ratio-mode t)
+
 
 ;; easier ui
 ;; (require 'ido) (ido-mode t) ;;
@@ -38,24 +130,8 @@
 ;; (global-set-key (kbd "M-x") 'smex-major-mode-commands)
 ;; (global-set-key (kbd "C-c C-c M-x") 'execute-extended-command)
 
-(use-package helm-mode
-  :config
-  (global-set-key (kbd "M-x") 'helm-M-x)
-  (global-set-key (kbd "C-c C-c M-x") 'execute-extended-command)
-  (helm-mode 1))
 
-(use-package which-key
-  :config
-    (which-key-mode))
-
-;; yasnippet config. It works somehow, even though I don't understand `use-package`
-(use-package yasnippet
-  :init
-  (require 'yasnippet)
-  (yas-global-mode 1)
-  :config
-  (add-to-list 'load-path
-	       "~/.emacs.d/plugins/yasnippet"))
+;; end installed packages
 
 ;; change mode to another mode (kind of). It is needed for tree-sitter. It changes automatically launched mode from one to another, tree-sitter for example
 (add-to-list 'major-mode-remap-alist
@@ -94,23 +170,14 @@
 (add-hook 'dired-mode-hook  (lambda () (local-set-key [f9] 'compile)))
 
 ;; Hooks
-(add-hook 'emacs-startup-hook #'global-jinx-mode)
+(add-hook 'elpaca-after-init-hook #'global-jinx-mode)
 
 (add-hook `prog-mode-hook `display-fill-column-indicator-mode)
 ;; (add-hook `prog-mode-hook `prettify-symbols-mode) ;; cringe symbols for words
 (add-hook `prog-mode-hook `eglot-ensure) ;; lsp for programming languages
 (add-hook `prog-mode-hook `rainbow-delimiters-mode) ;; Better paren highlighting for programming languages.
-(add-hook `after-init-hook `global-company-mode) ;; Company
+(add-hook `elpaca-after-init-hook `global-company-mode) ;; Company
 
-;; Multiple cursors
-(require 'multiple-cursors)
-
-;; When you have an active region that spans multiple lines, the following will add a cursor to each line:
-(global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
-;; When you want to add multiple cursors not based on continuous lines, but based on keywords in the buffer, use:
-(global-set-key (kbd "C->") 'mc/mark-next-like-this)
-(global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
-(global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
 
 ;; set 'exec-path' to match shell PATH automatically
 (defun set-exec-path-from-shell-PATH ()
@@ -161,22 +228,22 @@ that used by the user's shell."
 ;;    (set-char-table-range composition-function-table (car char-regexp)
 ;;                          `([,(cdr char-regexp) 0 font-shape-gstring]))))
 
-(require 'package)
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
-(package-initialize)
+;;(require 'package)
+;;(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+;;(package-initialize)
 (put 'downcase-region 'disabled nil)
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(custom-safe-themes
-   '("b754d3a03c34cfba9ad7991380d26984ebd0761925773530e24d8dd8b6894738" "9013233028d9798f901e5e8efb31841c24c12444d3b6e92580080505d56fd392" "6f1f6a1a3cff62cc860ad6e787151b9b8599f4471d40ed746ea2819fcd184e1a" "02d422e5b99f54bd4516d4157060b874d14552fe613ea7047c4a5cfa1288cf4f" "dfb1c8b5bfa040b042b4ef660d0aab48ef2e89ee719a1f24a4629a0c5ed769e8" "4ade6b630ba8cbab10703b27fd05bb43aaf8a3e5ba8c2dc1ea4a2de5f8d45882" "456697e914823ee45365b843c89fbc79191fdbaff471b29aad9dcbe0ee1d5641" "aec7b55f2a13307a55517fdf08438863d694550565dee23181d2ebd973ebd6b8" "b5fd9c7429d52190235f2383e47d340d7ff769f141cd8f9e7a4629a81abc6b19" "8d8207a39e18e2cc95ebddf62f841442d36fcba01a2a9451773d4ed30b632443" "37b6695bae243145fa2dfb41440c204cd22833c25cd1993b0f258905b9e65577" "be84a2e5c70f991051d4aaf0f049fa11c172e5d784727e0b525565bb1533ec78" "b54376ec363568656d54578d28b95382854f62b74c32077821fdfd604268616a" "f5f80dd6588e59cfc3ce2f11568ff8296717a938edd448a947f9823a4e282b66" "8c7e832be864674c220f9a9361c851917a93f921fedb7717b1b5ece47690c098" default))
- '(package-selected-packages
-   '(jinx scala-ts-mode markdown-mode magit helm yasnippet which-key rainbow-delimiters multiple-cursors move-text golden-ratio-scroll-screen golden-ratio dumb-jump doom-themes company beacon)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
+;;(custom-set-variables
+;; ;; custom-set-variables was added by Custom.
+;; ;; If you edit it by hand, you could mess it up, so be careful.
+;; ;; Your init file should contain only one such instance.
+;; ;; If there is more than one, they won't work right.
+;; '(custom-safe-themes
+;;   '("b754d3a03c34cfba9ad7991380d26984ebd0761925773530e24d8dd8b6894738" "9013233028d9798f901e5e8efb31841c24c12444d3b6e92580080505d56fd392" "6f1f6a1a3cff62cc860ad6e787151b9b8599f4471d40ed746ea2819fcd184e1a" "02d422e5b99f54bd4516d4157060b874d14552fe613ea7047c4a5cfa1288cf4f" "dfb1c8b5bfa040b042b4ef660d0aab48ef2e89ee719a1f24a4629a0c5ed769e8" "4ade6b630ba8cbab10703b27fd05bb43aaf8a3e5ba8c2dc1ea4a2de5f8d45882" "456697e914823ee45365b843c89fbc79191fdbaff471b29aad9dcbe0ee1d5641" "aec7b55f2a13307a55517fdf08438863d694550565dee23181d2ebd973ebd6b8" "b5fd9c7429d52190235f2383e47d340d7ff769f141cd8f9e7a4629a81abc6b19" "8d8207a39e18e2cc95ebddf62f841442d36fcba01a2a9451773d4ed30b632443" "37b6695bae243145fa2dfb41440c204cd22833c25cd1993b0f258905b9e65577" "be84a2e5c70f991051d4aaf0f049fa11c172e5d784727e0b525565bb1533ec78" "b54376ec363568656d54578d28b95382854f62b74c32077821fdfd604268616a" "f5f80dd6588e59cfc3ce2f11568ff8296717a938edd448a947f9823a4e282b66" "8c7e832be864674c220f9a9361c851917a93f921fedb7717b1b5ece47690c098" default))
+;; '(package-selected-packages
+;;   '(jinx scala-ts-mode markdown-mode magit helm yasnippet which-key rainbow-delimiters multiple-cursors move-text golden-ratio-scroll-screen golden-ratio dumb-jump doom-themes company beacon)))
+;;(custom-set-faces
+;; ;; custom-set-faces was added by Custom.
+;; ;; If you edit it by hand, you could mess it up, so be careful.
+;; ;; Your init file should contain only one such instance.
+;; ;; If there is more than one, they won't work right.
+;; )
