@@ -61,16 +61,23 @@
 (use-package magit :ensure t :demand t)
 (use-package rainbow-delimiters :ensure t :demand t)
 
-(use-package golden-ratio :ensure t :demand t)
-;; (use-package golden-ratio-scroll-screen :ensure t :demand t)
+(use-package golden-ratio :ensure t :demand t
+  :config (setq golden-ratio-auto-scale t)
+  :init (golden-ratio-mode 1))
+(use-package golden-ratio-scroll-screen :ensure t :demand t)
 (use-package company :ensure t :demand t)
-(use-package beacon :ensure t :demand t)
+(use-package beacon :ensure t :demand t
+  :config
+  (setq beacon-size 70)
+  :init (beacon-mode 1))
+
+(use-package projectile :ensure t :demand t
+  :config
+  (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+  :init (projectile-mode t))
 
 (use-package multiple-cursors :ensure t :demand t
-  :init
-  ;; Multiple cursors
-  (require 'multiple-cursors)
-
+  :init (require 'multiple-cursors)
   ;; When you have an active region that spans multiple lines, the following will add a cursor to each line:
   (global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
   ;; When you want to add multiple cursors not based on continuous lines, but based on keywords in the buffer, use:
@@ -117,9 +124,7 @@
   (add-to-list 'load-path
 	       "~/.emacs.d/plugins/yasnippet"))
 
-;;(require 'rainbow-delimiters)
 ;;(require 'which-key) (which-key-mode 1)
-;;(require 'golden-ratio) (golden-ratio-mode t)
 
 
 ;; easier ui
@@ -247,3 +252,7 @@ that used by the user's shell."
 ;; ;; Your init file should contain only one such instance.
 ;; ;; If there is more than one, they won't work right.
 ;; )
+
+;; Local Variables:
+;; jinx-languages: "en_US"
+;; End:
