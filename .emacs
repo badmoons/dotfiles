@@ -38,6 +38,9 @@
 (add-hook 'after-init-hook #'elpaca-process-queues)
 (elpaca `(,@elpaca-order))
 
+;; Uncomment for systems which cannot create symlinks:
+;; (elpaca-no-symlink-mode)
+
 ;; Install use-package support
 (elpaca elpaca-use-package
   ;; Enable use-package :ensure support for Elpaca.
