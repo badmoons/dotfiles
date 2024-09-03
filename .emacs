@@ -48,11 +48,14 @@
 (elpaca-wait)
  
 ;; end elpaca
+
 (tool-bar-mode 0)
 ;; (cua-mode t)
 (scroll-bar-mode 0)
 (menu-bar-mode 0)
 (windmove-default-keybindings)
+(global-display-line-numbers-mode 1)
+(setq display-line-numbers-type 'relative)
 (setq windmove-wrap-around 't)
 
 ;; installed packages
