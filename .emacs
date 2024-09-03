@@ -49,7 +49,7 @@
  
 ;; end elpaca
 (tool-bar-mode 0)
-(cua-mode t)
+;; (cua-mode t)
 (scroll-bar-mode 0)
 (menu-bar-mode 0)
 (windmove-default-keybindings)
@@ -58,6 +58,7 @@
 ;; installed packages
 
 (use-package jinx :ensure t :demand t)
+(use-package haskell-mode :ensure t :demand t)
 (use-package scala-ts-mode :ensure t :demand t)
 (use-package markdown-mode :ensure t :demand t)
 (use-package transient :ensure t)
