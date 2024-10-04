@@ -46,7 +46,7 @@
   ;; Enable use-package :ensure support for Elpaca.
   (elpaca-use-package-mode))
 (elpaca-wait)
- 
+
 ;; end elpaca
 
 (tool-bar-mode 0)
@@ -60,23 +60,27 @@
 
 ;; installed packages
 
-(use-package jinx :ensure t :demand t)
-(use-package haskell-mode :ensure t :demand t)
-(use-package scala-ts-mode :ensure t :demand t)
+;; (use-package jinx :ensure t :demand t)
+(use-package rust-mode :ensure t :demand t)
 (use-package markdown-mode :ensure t :demand t)
 (use-package transient :ensure t)
-(use-package magit :ensure t :demand t)
+;; (use-package magit :ensure t :demand t)	
 (use-package rainbow-delimiters :ensure t :demand t)
+
+(use-package all-the-icons :ensure t :demand t
+  :if (display-graphic-p))
+(use-package all-the-icons-dired :ensure t :demand t
+  :config (add-hook 'dired-mode-hook 'all-the-icons-dired-mode))
 
 (use-package golden-ratio :ensure t :demand t
   :config (setq golden-ratio-auto-scale t)
   :init (golden-ratio-mode 1))
 (use-package golden-ratio-scroll-screen :ensure t :demand t)
 (use-package company :ensure t :demand t)
-(use-package beacon :ensure t :demand t
-  :config
-  (setq beacon-size 70)
-  :init (beacon-mode 1))
+;; (use-package beacon :ensure t :demand t
+;;   :config
+;;   (setq beacon-size 70)
+;;   :init (beacon-mode 1))
 
 (use-package projectile :ensure t :demand t
   :config
@@ -85,9 +89,11 @@
 
 (use-package multiple-cursors :ensure t :demand t
   :init (require 'multiple-cursors)
-  ;; When you have an active region that spans multiple lines, the following will add a cursor to each line:
+  ;; When you have an active region that spans multiple lines, the
+  ;; following will add a cursor to each line:
   (global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
-  ;; When you want to add multiple cursors not based on continuous lines, but based on keywords in the buffer, use:
+  ;; When you want to add multiple cursors not based on continuous
+  ;; lines, but based on keywords in the buffer, use:
   (global-set-key (kbd "C->") 'mc/mark-next-like-this)
   (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
   (global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this))
@@ -96,7 +102,7 @@
   :init
   ;; set theme
   (if (display-graphic-p)
-      (load-theme 'doom-badger 'yes)))
+      (load-theme 'doom-1337'yes)))
 
 (use-package move-text
   :ensure t :demand t
@@ -121,7 +127,7 @@
   :config
     (which-key-mode))
 
-;; yasnippet config. It works somehow, even though I don't understand `use-package`
+;; yasnippet config.
 (use-package yasnippet
   :ensure t :demand t
   :init
@@ -132,20 +138,13 @@
 	       "~/.emacs.d/plugins/yasnippet"))
 
 ;;(require 'which-key) (which-key-mode 1)
-
-
-;; easier ui
-;; (require 'ido) (ido-mode t) ;;
-;; (require 'smex) (smex-initialize)
-   ;; smex keybindings
-;; (global-set-key (kbd "M-x") 'smex)
-;; (global-set-key (kbd "M-x") 'smex-major-mode-commands)
-;; (global-set-key (kbd "C-c C-c M-x") 'execute-extended-command)
-
+(global-whitespace-mode 1)
 
 ;; end installed packages
 
-;; change mode to another mode (kind of). It is needed for tree-sitter. It changes automatically launched mode from one to another, tree-sitter for example
+;; change mode to another mode (kind of).
+;; It is needed for tree-sitter. It changes automatically
+;; launched mode from one to another, tree-sitter for example
 (add-to-list 'major-mode-remap-alist
 	     '(python-mode . python-ts-mode)
 	     '(c-mode . c-ts-mode))
@@ -178,15 +177,16 @@
 
 ;; Keybindings
 (global-set-key [f5] 'revert-buffer-no-confirm)
+(global-set-key "\M-o" 'other-window)
 (add-hook 'prog-mode-hook   (lambda () (local-set-key [f9] 'compile)))
 (add-hook 'dired-mode-hook  (lambda () (local-set-key [f9] 'compile)))
 
 ;; Hooks
-(add-hook 'elpaca-after-init-hook #'global-jinx-mode)
+;; (add-hook 'elpaca-after-init-hook #'global-jinx-mode)
 
 (add-hook `prog-mode-hook `display-fill-column-indicator-mode)
 ;; (add-hook `prog-mode-hook `prettify-symbols-mode) ;; cringe symbols for words
-(add-hook `prog-mode-hook `eglot-ensure) ;; lsp for programming languages
+;; (add-hook `prog-mode-hook `eglot-ensure) ;; lsp for programming languages
 (add-hook `prog-mode-hook `rainbow-delimiters-mode) ;; Better paren highlighting for programming languages.
 (add-hook `elpaca-after-init-hook `global-company-mode) ;; Company
 
@@ -260,6 +260,21 @@ that used by the user's shell."
 ;; ;; If there is more than one, they won't work right.
 ;; )
 
-;; Local Variables:
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(custom-safe-themes
+   '("4ade6b630ba8cbab10703b27fd05bb43aaf8a3e5ba8c2dc1ea4a2de5f8d45882" "014cb63097fc7dbda3edf53eb09802237961cbb4c9e9abd705f23b86511b0a69" "b5fd9c7429d52190235f2383e47d340d7ff769f141cd8f9e7a4629a81abc6b19" "02d422e5b99f54bd4516d4157060b874d14552fe613ea7047c4a5cfa1288cf4f" "8b148cf8154d34917dfc794b5d0fe65f21e9155977a36a5985f89c09a9669aa0" default))
+ '(package-selected-packages
+   '(eglot yasnippet which-key scala-ts-mode rainbow-delimiters projectile multiple-cursors move-text markdown-mode magit jinx helm golden-ratio-scroll-screen golden-ratio dumb-jump doom-themes company beacon)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
+ ;; Local Variables:
 ;; jinx-languages: "en_US"
 ;; End:
