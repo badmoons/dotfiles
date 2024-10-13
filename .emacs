@@ -4,9 +4,9 @@
 (defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
 (defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
 (defvar elpaca-order '(elpaca :repo "https://github.com/progfolio/elpaca.git"
-                              :ref nil :depth 1
-                              :files (:defaults "elpaca-test.el" (:exclude "extensions"))
-                              :build (:not elpaca--activate-package)))
+			      :ref nil :depth 1
+			      :files (:defaults "elpaca-test.el" (:exclude "extensions"))
+			      :build (:not elpaca--activate-package)))
 (let* ((repo  (expand-file-name "elpaca/" elpaca-repos-directory))
        (build (expand-file-name "elpaca/" elpaca-builds-directory))
        (order (cdr elpaca-order))
@@ -16,20 +16,20 @@
     (make-directory repo t)
     (when (< emacs-major-version 28) (require 'subr-x))
     (condition-case-unless-debug err
-        (if-let ((buffer (pop-to-buffer-same-window "*elpaca-bootstrap*"))
-                 ((zerop (apply #'call-process `("git" nil ,buffer t "clone"
-                                                 ,@(when-let ((depth (plist-get order :depth)))
-                                                     (list (format "--depth=%d" depth) "--no-single-branch"))
-                                                 ,(plist-get order :repo) ,repo))))
-                 ((zerop (call-process "git" nil buffer t "checkout"
-                                       (or (plist-get order :ref) "--"))))
-                 (emacs (concat invocation-directory invocation-name))
-                 ((zerop (call-process emacs nil buffer nil "-Q" "-L" "." "--batch"
-                                       "--eval" "(byte-recompile-directory \".\" 0 'force)")))
-                 ((require 'elpaca))
-                 ((elpaca-generate-autoloads "elpaca" repo)))
-            (progn (message "%s" (buffer-string)) (kill-buffer buffer))
-          (error "%s" (with-current-buffer buffer (buffer-string))))
+	(if-let ((buffer (pop-to-buffer-same-window "*elpaca-bootstrap*"))
+		 ((zerop (apply #'call-process `("git" nil ,buffer t "clone"
+						 ,@(when-let ((depth (plist-get order :depth)))
+						     (list (format "--depth=%d" depth) "--no-single-branch"))
+						 ,(plist-get order :repo) ,repo))))
+		 ((zerop (call-process "git" nil buffer t "checkout"
+				       (or (plist-get order :ref) "--"))))
+		 (emacs (concat invocation-directory invocation-name))
+		 ((zerop (call-process emacs nil buffer nil "-Q" "-L" "." "--batch"
+				       "--eval" "(byte-recompile-directory \".\" 0 'force)")))
+		 ((require 'elpaca))
+		 ((elpaca-generate-autoloads "elpaca" repo)))
+	    (progn (message "%s" (buffer-string)) (kill-buffer buffer))
+	  (error "%s" (with-current-buffer buffer (buffer-string))))
       ((error) (warn "%s" err) (delete-directory repo 'recursive))))
   (unless (require 'elpaca-autoloads nil t)
     (require 'elpaca)
@@ -64,7 +64,7 @@
 (use-package rust-mode :ensure t :demand t)
 (use-package markdown-mode :ensure t :demand t)
 (use-package transient :ensure t)
-;; (use-package magit :ensure t :demand t)	
+;; (use-package magit :ensure t :demand t)
 (use-package rainbow-delimiters :ensure t :demand t)
 
 (use-package all-the-icons :ensure t :demand t
@@ -102,7 +102,7 @@
   :init
   ;; set theme
   (if (display-graphic-p)
-      (load-theme 'doom-1337'yes)))
+      (load-theme 'doom-Iosvkem'yes)))
 
 (use-package move-text
   :ensure t :demand t
@@ -125,7 +125,7 @@
 (use-package which-key
   :ensure t :demand t
   :config
-    (which-key-mode))
+  (which-key-mode))
 
 ;; yasnippet config.
 (use-package yasnippet
@@ -136,6 +136,22 @@
   :config
   (add-to-list 'load-path
 	       "~/.emacs.d/plugins/yasnippet"))
+
+(use-package lsp-mode :ensure t :demand t
+  :init
+  ;; set prefix for lsp-command-keymap
+  (setq lsp-keymap-prefix "C-c l")
+  :hook (
+	 (python-ts-mode . lsp)
+	 (csharp-mode . lsp)
+	 (lsp-mode . lsp-enable-which-key-integration))
+  :commands lsp)
+
+(use-package lsp-ui
+  :ensure t :demand t
+  :commands lsp-ui-mode)
+(use-package helm-lsp :ensure t :demand t
+  :commands helm-lsp-workspace-symbol)
 
 ;;(require 'which-key) (which-key-mode 1)
 (global-whitespace-mode 1)
@@ -187,7 +203,8 @@
 (add-hook `prog-mode-hook `display-fill-column-indicator-mode)
 ;; (add-hook `prog-mode-hook `prettify-symbols-mode) ;; cringe symbols for words
 ;; (add-hook `prog-mode-hook `eglot-ensure) ;; lsp for programming languages
-(add-hook `prog-mode-hook `rainbow-delimiters-mode) ;; Better paren highlighting for programming languages.
+(add-hook `prog-mode-hook `rainbow-delimiters-mode) ;; Better paren
+    ;; highlighting for programming languages.
 (add-hook `elpaca-after-init-hook `global-company-mode) ;; Company
 
 
@@ -196,7 +213,7 @@
   "Set up Emacs' `exec-path' and PATH environment variable to match
 that used by the user's shell."
 
-  (interactive) 
+  (interactive)
   (let ((path-from-shell (replace-regexp-in-string
 			  "[ \t\n]*$" "" (shell-command-to-string
 					  "$SHELL --login -c 'echo $PATH'"
