@@ -137,6 +137,11 @@
   (add-to-list 'load-path
 	       "~/.emacs.d/plugins/yasnippet"))
 
+(use-package flycheck :ensure t :demand t
+  :config
+  (global-flycheck-mode)
+  )
+
 (use-package lsp-mode :ensure t :demand t
   :init
   ;; set prefix for lsp-command-keymap
