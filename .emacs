@@ -43,11 +43,12 @@
 
 ;; Install use-package support
 (elpaca elpaca-use-package
+
   ;; Enable use-package :ensure support for Elpaca.
   (elpaca-use-package-mode))
 (elpaca-wait)
-
 ;; end elpaca
+
 
 (tool-bar-mode 0)
 ;; (cua-mode t)
@@ -59,6 +60,13 @@
 (setq windmove-wrap-around 't)
 
 ;; installed packages
+;;                                                  #                          
+;; m   m   mmm    mmm          mmmm    mmm    mmm   #   m   mmm    mmmm   mmm  
+;; #   #  #   "  #"  #         #" "#  "   #  #"  "  # m"   "   #  #" "#  #"  # 
+;; #   #   """m  #""""   """   #   #  m"""#  #      #"#    m"""#  #   #  #"""" 
+;; "mm"#  "mmm"  "#mm"         ##m#"  "mm"#  "#mm"  #  "m  "mm"#  "#m"#  "#mm" 
+;;                             #                                   m  #        
+;;                             "                                    ""         
 
 ;; (use-package jinx :ensure t :demand t)
 (use-package rust-mode :ensure t :demand t)
@@ -75,6 +83,7 @@
 (use-package golden-ratio :ensure t :demand t
   :config (setq golden-ratio-auto-scale t)
   :init (golden-ratio-mode 1))
+
 (use-package golden-ratio-scroll-screen :ensure t :demand t)
 (use-package company :ensure t :demand t)
 ;; (use-package beacon :ensure t :demand t
@@ -94,9 +103,13 @@
   (global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
   ;; When you want to add multiple cursors not based on continuous
   ;; lines, but based on keywords in the buffer, use:
-  (global-set-key (kbd "C->") 'mc/mark-next-like-this)
   (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
-  (global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this))
+  (global-set-key (kbd "C->") 'mc/mark-next-like-this)
+  (global-set-key (kbd "C-{") 'mc/skip-to-previous-like-this)
+  (global-set-key (kbd "C-}") 'mc/skip-to-next-like-this)
+  (global-set-key (kbd "C-)") 'mc/unmark-next-like-this)
+  (global-set-key (kbd "C-(") 'mc/unmark-previous-like-this)
+  )
 
 (use-package doom-themes :ensure t :demand t
   :init
@@ -158,8 +171,20 @@
 (use-package helm-lsp :ensure t :demand t
   :commands helm-lsp-workspace-symbol)
 
+(use-package ellama :ensure t :demand t
+  :bind ("C-c e" . ellama-transient-main-menu)
+  :init
+  (require 'llm-openai)
+  (setopt ellama-provider
+	  (make-llm-openai-compatible
+	   :url "http://localhost:5001/v1/"))
+  (setq llm-warn-on-nonfree nil)
+)
+
+
 ;;(require 'which-key) (which-key-mode 1)
-(global-whitespace-mode 1)
+;; (global-whitespace-mode 1)
+(column-number-mode 1)
 
 ;; end installed packages
 
