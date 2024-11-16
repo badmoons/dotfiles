@@ -44,35 +44,30 @@
 ;; Install use-package support
 (elpaca elpaca-use-package
 
-  ;; Enable use-package :ensure support for Elpaca.
-  (elpaca-use-package-mode))
+;; Enable use-package :ensure support for Elpaca.
+(elpaca-use-package-mode))
 (elpaca-wait)
 ;; end elpaca
 
-
+;; builtin modes and some vars for them
 (tool-bar-mode 0)
 ;; (cua-mode t)
 (scroll-bar-mode 0)
 (menu-bar-mode 0)
 (windmove-default-keybindings)
 (global-display-line-numbers-mode 1)
+(column-number-mode 1)
 (setq display-line-numbers-type 'relative)
 (setq windmove-wrap-around 't)
 
 ;; installed packages
-;;                                                  #                          
-;; m   m   mmm    mmm          mmmm    mmm    mmm   #   m   mmm    mmmm   mmm  
-;; #   #  #   "  #"  #         #" "#  "   #  #"  "  # m"   "   #  #" "#  #"  # 
-;; #   #   """m  #""""   """   #   #  m"""#  #      #"#    m"""#  #   #  #"""" 
-;; "mm"#  "mmm"  "#mm"         ##m#"  "mm"#  "#mm"  #  "m  "mm"#  "#m"#  "#mm" 
-;;                             #                                   m  #        
-;;                             "                                    ""         
 
 ;; (use-package jinx :ensure t :demand t)
 (use-package rust-mode :ensure t :demand t)
 (use-package markdown-mode :ensure t :demand t)
+(use-package glsl-mode :ensure t :demand t)
 (use-package transient :ensure t)
-;; (use-package magit :ensure t :demand t)
+(use-package magit :ensure t :demand t)
 (use-package rainbow-delimiters :ensure t :demand t)
 
 (use-package all-the-icons :ensure t :demand t
@@ -155,6 +150,7 @@
   (global-flycheck-mode)
   )
 
+
 (use-package lsp-mode :ensure t :demand t
   :init
   ;; set prefix for lsp-command-keymap
@@ -162,6 +158,8 @@
   :hook (
 	 (python-ts-mode . lsp)
 	 (csharp-mode . lsp)
+	 (c-ts-mode . lsp)
+	 (c++-ts-mode . lsp)
 	 (lsp-mode . lsp-enable-which-key-integration))
   :commands lsp)
 
@@ -182,18 +180,16 @@
 )
 
 
-;;(require 'which-key) (which-key-mode 1)
 ;; (global-whitespace-mode 1)
-(column-number-mode 1)
 
 ;; end installed packages
 
-;; change mode to another mode (kind of).
-;; It is needed for tree-sitter. It changes automatically
-;; launched mode from one to another, tree-sitter for example
+;; remap modes to new ones
 (add-to-list 'major-mode-remap-alist
 	     '(python-mode . python-ts-mode)
-	     '(c-mode . c-ts-mode))
+	     '(c-mode . c-ts-mode)
+	     '(c++-mode . c++-ts-mode))
+
 
 ;; 80 character column
 (setq display-fill-column-indicator-column 80)
@@ -201,6 +197,9 @@
 
 ;; remove starting screen
 (setq inhibit-startup-screen t)
+
+;; font size
+(set-face-attribute 'default nil :height 100)
 
 ;; MOVE BACKUPS WHERE THEY BELONG
 (setq
@@ -222,21 +221,24 @@
     (revert-buffer :ignore-auto :noconfirm))
 
 ;; Keybindings
+;; (global-set-key "\C-c\C-d" "\C-a\C- \C-n\M-w\C-y")
+(global-set-key "\C-c\C-d" "\C-a\C- \C-e\M-w\C-j\C-y\C-a")
 (global-set-key [f5] 'revert-buffer-no-confirm)
 (global-set-key "\M-o" 'other-window)
-(add-hook 'prog-mode-hook   (lambda () (local-set-key [f9] 'compile)))
-(add-hook 'dired-mode-hook  (lambda () (local-set-key [f9] 'compile)))
+(add-hook 'prog-mode-hook   (lambda() (local-set-key [f9] 'compile)))
+(add-hook 'dired-mode-hook  (lambda() (local-set-key [f9] 'compile)))
 
 ;; Hooks
 ;; (add-hook 'elpaca-after-init-hook #'global-jinx-mode)
-
+(add-hook `c++-mode-hook (lambda() (c-set-style "stroustrup")))
 (add-hook `prog-mode-hook `display-fill-column-indicator-mode)
 ;; (add-hook `prog-mode-hook `prettify-symbols-mode) ;; cringe symbols for words
-;; (add-hook `prog-mode-hook `eglot-ensure) ;; lsp for programming languages
+;; (add-hook `prog-mode-hook `eglot-ensure) ;; builitin lsp for programming languages
 (add-hook `prog-mode-hook `rainbow-delimiters-mode) ;; Better paren
     ;; highlighting for programming languages.
 (add-hook `elpaca-after-init-hook `global-company-mode) ;; Company
 
+(advice-add 'save-buffer' :before `whitespace-cleanup)
 
 ;; set 'exec-path' to match shell PATH automatically
 (defun set-exec-path-from-shell-PATH ()
