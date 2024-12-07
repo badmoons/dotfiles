@@ -1,3 +1,5 @@
+;;; - my config
+
 ;; elpaca
 (defvar elpaca-installer-version 0.7)
 (defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
@@ -50,10 +52,7 @@
 ;; end elpaca
 
 ;; builtin modes and some vars for them
-(tool-bar-mode 0)
 ;; (cua-mode t)
-(scroll-bar-mode 0)
-(menu-bar-mode 0)
 (windmove-default-keybindings)
 (global-display-line-numbers-mode 1)
 (column-number-mode 1)
@@ -63,7 +62,12 @@
 ;; installed packages
 
 ;; (use-package jinx :ensure t :demand t)
-(use-package rust-mode :ensure t :demand t)
+;; clojure
+(use-package clojure-mode :ensure t :demand t)
+(use-package cider :ensure t :demand t)
+;;
+;; (use-package rust-mode :ensure t :demand t)
+(use-package v-mode :ensure t :demand t)
 (use-package markdown-mode :ensure t :demand t)
 (use-package glsl-mode :ensure t :demand t)
 (use-package transient :ensure t)
@@ -116,6 +120,7 @@
   :ensure t :demand t
   :config
   (move-text-default-bindings))
+
 (use-package dumb-jump
   :ensure t :demand t
   :init
@@ -128,7 +133,7 @@
   :config
   (global-set-key (kbd "M-x") 'helm-M-x)
   (global-set-key (kbd "C-c C-c M-x") 'execute-extended-command)
-  (helm-mode 1))
+  (helm-mode))
 
 (use-package which-key
   :ensure t :demand t
@@ -150,7 +155,6 @@
   (global-flycheck-mode)
   )
 
-
 (use-package lsp-mode :ensure t :demand t
   :init
   ;; set prefix for lsp-command-keymap
@@ -160,14 +164,23 @@
 	 (csharp-mode . lsp)
 	 (c-ts-mode . lsp)
 	 (c++-ts-mode . lsp)
+	 (java-ts-mode . lsp)
 	 (lsp-mode . lsp-enable-which-key-integration))
   :commands lsp)
 
-(use-package lsp-ui
-  :ensure t :demand t
+(use-package lsp-ui :ensure t :demand t
   :commands lsp-ui-mode)
 (use-package helm-lsp :ensure t :demand t
-  :commands helm-lsp-workspace-symbol)
+  ;;:commands helm-lsp-workspace-symbol
+  )
+(use-package lsp-java :ensure t :demand t)
+
+;; (use-package dap-ui-mode :ensure t :demand t
+(use-package dap-mode :ensure t :demand t
+  :config
+  (dap-mode 1)
+  (dap-ui-mode 1)
+  )
 
 (use-package ellama :ensure t :demand t
   :bind ("C-c e" . ellama-transient-main-menu)
@@ -179,7 +192,6 @@
   (setq llm-warn-on-nonfree nil)
 )
 
-
 ;; (global-whitespace-mode 1)
 
 ;; end installed packages
@@ -190,10 +202,13 @@
 	     '(c-mode . c-ts-mode)
 	     '(c++-mode . c++-ts-mode))
 
+(add-to-list 'major-mode-remap-alist
+	     '(java-mode . java-ts-mode))
 
 ;; 80 character column
 (setq display-fill-column-indicator-column 80)
 (setq markdown-fontify-code-blocks-natively t)
+
 
 ;; remove starting screen
 (setq inhibit-startup-screen t)
@@ -212,6 +227,7 @@
    version-control t)
 
 ;; Associate a mode with a file
+(add-to-list 'auto-mode-alist '("\\.v\\'" . v-mode))
 (add-to-list 'auto-mode-alist '("\\.lpr\\'" . opascal-mode))
 
 ;; Function definitions
@@ -221,10 +237,12 @@
     (revert-buffer :ignore-auto :noconfirm))
 
 ;; Keybindings
-;; (global-set-key "\C-c\C-d" "\C-a\C- \C-n\M-w\C-y")
-(global-set-key "\C-c\C-d" "\C-a\C- \C-e\M-w\C-j\C-y\C-a")
+;; custom duplicate line
+(global-set-key "\C-x\C-z" "\C-a\C- \C-e\M-w\C-j\C-y\M-m")
 (global-set-key [f5] 'revert-buffer-no-confirm)
 (global-set-key "\M-o" 'other-window)
+(global-set-key "\C-\M-o" 'other-frame)
+(add-hook 'prog-mode-hook   (lambda() (setq fill-column 80)))
 (add-hook 'prog-mode-hook   (lambda() (local-set-key [f9] 'compile)))
 (add-hook 'dired-mode-hook  (lambda() (local-set-key [f9] 'compile)))
 
@@ -234,7 +252,7 @@
 (add-hook `prog-mode-hook `display-fill-column-indicator-mode)
 ;; (add-hook `prog-mode-hook `prettify-symbols-mode) ;; cringe symbols for words
 ;; (add-hook `prog-mode-hook `eglot-ensure) ;; builitin lsp for programming languages
-(add-hook `prog-mode-hook `rainbow-delimiters-mode) ;; Better paren
+;; (add-hook `prog-mode-hook `rainbow-delimiters-mode) ;; Better paren
     ;; highlighting for programming languages.
 (add-hook `elpaca-after-init-hook `global-company-mode) ;; Company
 
@@ -315,7 +333,7 @@ that used by the user's shell."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
-   '("4ade6b630ba8cbab10703b27fd05bb43aaf8a3e5ba8c2dc1ea4a2de5f8d45882" "014cb63097fc7dbda3edf53eb09802237961cbb4c9e9abd705f23b86511b0a69" "b5fd9c7429d52190235f2383e47d340d7ff769f141cd8f9e7a4629a81abc6b19" "02d422e5b99f54bd4516d4157060b874d14552fe613ea7047c4a5cfa1288cf4f" "8b148cf8154d34917dfc794b5d0fe65f21e9155977a36a5985f89c09a9669aa0" default))
+   '("9f297216c88ca3f47e5f10f8bd884ab24ac5bc9d884f0f23589b0a46a608fe14" "dfb1c8b5bfa040b042b4ef660d0aab48ef2e89ee719a1f24a4629a0c5ed769e8" "c5878086e65614424a84ad5c758b07e9edcf4c513e08a1c5b1533f313d1b17f1" "7ec8fd456c0c117c99e3a3b16aaf09ed3fb91879f6601b1ea0eeaee9c6def5d9" "691d671429fa6c6d73098fc6ff05d4a14a323ea0a18787daeb93fde0e48ab18b" "4e2e42e9306813763e2e62f115da71b485458a36e8b4c24e17a2168c45c9cf9d" "dccf4a8f1aaf5f24d2ab63af1aa75fd9d535c83377f8e26380162e888be0c6a9" "d6b934330450d9de1112cbb7617eaf929244d192c4ffb1b9e6b63ad574784aad" "4ade6b630ba8cbab10703b27fd05bb43aaf8a3e5ba8c2dc1ea4a2de5f8d45882" "014cb63097fc7dbda3edf53eb09802237961cbb4c9e9abd705f23b86511b0a69" "b5fd9c7429d52190235f2383e47d340d7ff769f141cd8f9e7a4629a81abc6b19" "02d422e5b99f54bd4516d4157060b874d14552fe613ea7047c4a5cfa1288cf4f" "8b148cf8154d34917dfc794b5d0fe65f21e9155977a36a5985f89c09a9669aa0" default))
  '(package-selected-packages
    '(eglot yasnippet which-key scala-ts-mode rainbow-delimiters projectile multiple-cursors move-text markdown-mode magit jinx helm golden-ratio-scroll-screen golden-ratio dumb-jump doom-themes company beacon)))
 (custom-set-faces
